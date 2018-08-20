@@ -26,7 +26,7 @@
 %% RelayState is an arbitrary blob up to 80 bytes long that will
 %% be returned verbatim with any assertion that results from this
 %% AuthnRequest.
--spec reply_with_authnreq(esaml:sp(), IdPSSOEndpoint :: uri(), RelayState :: binary(), Req) -> {ok, Req}.
+-spec reply_with_authnreq(esaml:sp(), IdPSSOEndpoint :: uri(), RelayState :: binary(), Req) -> Req.
 reply_with_authnreq(SP, IDP, RelayState, Req) ->
     reply_with_authnreq(SP, IDP, RelayState, Req, undefined, undefined, undefined).
 
@@ -52,7 +52,7 @@ reply_with_authnreq(SP, IDP, RelayState, Req, User_Name_Id, Xml_Callback, Xml_Ca
 %%
 %% NameID should be the exact subject name from the assertion you
 %% wish to log out.
--spec reply_with_logoutreq(esaml:sp(), IdPSLOEndpoint :: uri(), NameID :: string(), Req) -> {ok, Req}.
+-spec reply_with_logoutreq(esaml:sp(), IdPSLOEndpoint :: uri(), NameID :: string(), Req) -> Req.
 reply_with_logoutreq(SP, IDP, NameID, Req) ->
     SignedXml = esaml_sp:generate_logout_request(IDP, NameID, SP),
     reply_with_req(IDP, SignedXml, undefined, <<>>, Req).
@@ -61,7 +61,7 @@ reply_with_logoutreq(SP, IDP, NameID, Req) ->
 %%
 %% Be sure to keep the RelayState from the original LogoutRequest that you
 %% received to allow the IdP to keep state.
--spec reply_with_logoutresp(esaml:sp(), IdPSLOEndpoint :: uri(), esaml:status_code(), RelayState :: binary(), Req) -> {ok, Req}.
+-spec reply_with_logoutresp(esaml:sp(), IdPSLOEndpoint :: uri(), esaml:status_code(), RelayState :: binary(), Req) -> Req.
 reply_with_logoutresp(SP, IDP, Status, RelayState, Req) ->
     SignedXml = esaml_sp:generate_logout_response(IDP, Status, SP),
     reply_with_req(IDP, SignedXml, undefined, RelayState, Req).
@@ -131,7 +131,7 @@ validate_logout(SP, SAMLEncoding, SAMLResponse, RelayState, Req2) ->
     end.
 
 %% @doc Reply to a Cowboy request with a Metadata payload
--spec reply_with_metadata(esaml:sp(), Req) -> {ok, Req}.
+-spec reply_with_metadata(esaml:sp(), Req) -> Req.
 reply_with_metadata(SP, Req) ->
     SignedXml = esaml_sp:generate_metadata(SP),
     Metadata = xmerl:export([SignedXml], xmerl_xml),
