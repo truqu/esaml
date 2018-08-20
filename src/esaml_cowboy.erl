@@ -26,7 +26,7 @@
 %% RelayState is an arbitrary blob up to 80 bytes long that will
 %% be returned verbatim with any assertion that results from this
 %% AuthnRequest.
--spec reply_with_authnreq(esaml:sp(), IdPSSOEndpoint :: uri(), RelayState :: binary(), Req) -> {ok, Req}.
+-spec reply_with_authnreq(esaml:sp(), IdPSSOEndpoint :: uri(), RelayState :: binary(), Req) -> Req.
 reply_with_authnreq(SP, IDP, RelayState, Req) ->
     SignedXml = SP:generate_authn_request(IDP),
     reply_with_req(IDP, SignedXml, RelayState, Req).
@@ -35,7 +35,7 @@ reply_with_authnreq(SP, IDP, RelayState, Req) ->
 %%
 %% NameID should be the exact subject name from the assertion you
 %% wish to log out.
--spec reply_with_logoutreq(esaml:sp(), IdPSLOEndpoint :: uri(), NameID :: string(), Req) -> {ok, Req}.
+-spec reply_with_logoutreq(esaml:sp(), IdPSLOEndpoint :: uri(), NameID :: string(), Req) -> Req.
 reply_with_logoutreq(SP, IDP, NameID, Req) ->
     SignedXml = SP:generate_logout_request(IDP, NameID),
     reply_with_req(IDP, SignedXml, <<>>, Req).
@@ -44,7 +44,7 @@ reply_with_logoutreq(SP, IDP, NameID, Req) ->
 %%
 %% Be sure to keep the RelayState from the original LogoutRequest that you
 %% received to allow the IdP to keep state.
--spec reply_with_logoutresp(esaml:sp(), IdPSLOEndpoint :: uri(), esaml:status_code(), RelayState :: binary(), Req) -> {ok, Req}.
+-spec reply_with_logoutresp(esaml:sp(), IdPSLOEndpoint :: uri(), esaml:status_code(), RelayState :: binary(), Req) -> Req.
 reply_with_logoutresp(SP, IDP, Status, RelayState, Req) ->
     SignedXml = SP:generate_logout_response(IDP, Status),
     reply_with_req(IDP, SignedXml, RelayState, Req).
@@ -114,7 +114,7 @@ validate_logout(SP, SAMLEncoding, SAMLResponse, RelayState, Req2) ->
     end.
 
 %% @doc Reply to a Cowboy request with a Metadata payload
--spec reply_with_metadata(esaml:sp(), Req) -> {ok, Req}.
+-spec reply_with_metadata(esaml:sp(), Req) -> Req.
 reply_with_metadata(SP, Req) ->
     SignedXml = SP:generate_metadata(),
     Metadata = xmerl:export([SignedXml], xmerl_xml),
